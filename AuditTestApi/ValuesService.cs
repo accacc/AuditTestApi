@@ -1,4 +1,6 @@
-﻿namespace AuditTestApi
+﻿using Audit.Core;
+
+namespace AuditTestApi
 {
     public class ProductService : IProductService
     {
@@ -9,9 +11,23 @@
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
+
+        public async Task<IEnumerable<AuditEvent?>> GetAudits()
+        {
+
+            AuditService auditService = new AuditService();
+            var list = await auditService.GetList();
+
+            return list;
+        }
+
         public IEnumerable<ProductEntity?> GetProducts()
         {
-            return _dbContext.Products;
+
+            AuditService auditService = new AuditService();
+            var list = auditService.GetList();
+
+            return _dbContext.Products.ToList();
         }
 
         public async Task<ProductEntity?> GetAsync(int id)
@@ -30,9 +46,16 @@
         public async Task ReplaceAsync(int id, ProductEntity value)
         {
             var entity = await _dbContext.Products.FindAsync(id);
+
             if (entity != null)
             {
-                entity = value;
+                entity.SpecialPrice = value.SpecialPrice;
+                entity.Price = value.Price;
+                entity.Quantity = value.Quantity;
+                entity.PublishDate = value.PublishDate;
+                entity.Name = value.Name;
+
+                _dbContext.Update(entity);
                 await _dbContext.SaveChangesAsync();
             }
         }

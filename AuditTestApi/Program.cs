@@ -1,4 +1,4 @@
-using Audit.DynamicProxy;
+using Audit.Core;
 
 using AuditTestApi;
 
@@ -10,14 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(mvc =>
 {
-    mvc.AuditSetupFilter();
+    //mvc.AuditSetupFilter();
 });
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuditedTransient<IProductService, ProductService>();
+//builder.Services.AddAuditedTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddDbContext<ProductDbContext>(_ => _.UseInMemoryDatabase("default"));
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
@@ -48,17 +49,20 @@ Audit.EntityFramework.Configuration.Setup()
 
 //        await File.WriteAllTextAsync(@"C:\temp\a.json", ev.ToJson())));
 
-Audit.Core.Configuration.AddOnSavingAction(scope =>
-{
-    var interceptEvent = scope.GetAuditInterceptEvent();
+//Audit.Core.Configuration.AddOnSavingAction(scope =>
+//{
+//    var interceptEvent = scope.GetAuditInterceptEvent();
 
-    foreach (var arg in interceptEvent.Arguments)
-    {
-        arg.Value = ToJson(arg.Value);
-    }
+//    if (interceptEvent != null)
+//    {
+//        foreach (var arg in interceptEvent.Arguments)
+//        {
+//            arg.Value = ToJson(arg.Value);
+//        }
 
-    interceptEvent.Result.Value = ToJson(interceptEvent.Result.Value);
-});
+//        interceptEvent.Result.Value = ToJson(interceptEvent.Result.Value);
+//    }
+//});
 
 
 
@@ -71,9 +75,22 @@ Audit.Core.Configuration.AddOnSavingAction(scope =>
 //              .Id(ev => Guid.NewGuid()));
 
 
-app.AuditSetupMiddleware();
+Audit.Core.Configuration.Setup()
+    .UseMongoDB(config => config
+        .ConnectionString("mongodb://marketing:Marketing2019!@157.90.29.241:27017")
+        .Database("Audit")
+        .Collection("Event"));
 
-app.AuditSetupOutput();
+
+//BsonClassMap.RegisterClassMap<AuditTestApi.AuditEvent>(cm =>
+//{
+//    cm.AutoMap();
+//    cm.MapIdMember(c => c.Id).SetIdGenerator(CombGuidGenerator.Instance);
+//});
+
+//app.AuditSetupMiddleware();
+
+//app.AuditSetupOutput();
 
 app.Run();
 

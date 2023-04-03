@@ -1,0 +1,34 @@
+﻿@page "/fetchdata"
+@using AuditUI.Shared
+@using System.Text.Json;
+           @using System.Text.Json.Serialization;
+
+
+@inject HttpClient Http
+
+
+<PageTitle>Audit Data</PageTitle>
+
+<h1>Audit Data</h1>
+
+<p>This component demonstrates fetching Audit Data from the server.</p>
+
+@if (audits == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    string htmlTable = new Json2Html(false,"table").GetJson2Html(JsonSerializer.Serialize(audits));
+
+    @((MarkupString)htmlTable)
+}
+
+@code {
+    private AuditEvent[]? audits;
+
+    protected override async Task OnInitializedAsync()
+    {
+        audits = await Http.GetFromJsonAsync<AuditEvent[]>("WeatherForecast");
+    }
+}
