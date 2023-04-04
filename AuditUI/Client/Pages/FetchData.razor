@@ -148,6 +148,7 @@ else
         <thead>
             <tr>
                 <th>Entities</th>
+                <th>Primary keys</th>
                 <th>Date</th>
               
             </tr>
@@ -156,8 +157,7 @@ else
         @foreach (var audit in audits)
         {
             <tr>
-                
-                <td>  @string.Join(",",@audit.EntityFrameworkEvent.Entries.Select(s=>s.Table))</td>
+                <td> <h5><b> @string.Join(",",@audit.EntityFrameworkEvent.Entries.Select(s=>s.Table))</b></h5></td>
                 <td>  @audit.StartDate</td>
             </tr>
             <tr>
@@ -168,13 +168,15 @@ else
 
                             @if (entry.Action == "Update" && entry.Changes != null)
                             {
-                                 <tr>
-
-                                        <td>
+                                 <tr><td>
                                         Value of <b>@entry.Table's</b> name  updated with
                                 @foreach (var change in entry.Changes)
                                 {
-                                   <b> @change.ColumnName </b><label style="color:darkred;">@change.OriginalValue</label> <label>to</label> <label style="color:green;">@change.NewValue ,</label>
+                                            <b>PK:</b>
+
+                                            @GetPrimaryKeys(entry)
+                                    .
+                                   <b> @change.ColumnName </b><label style="color:darkred;"> @change.OriginalValue</label> <label>to</label> <label style="color:green;">@change.NewValue ,</label>
                                        
                                 }
                                     </td>
@@ -228,4 +230,9 @@ else
     }
 
     private string Getentites(EventAudit context) => string.Join(",", context.EntityFrameworkEvent.Entries.Select(s => s.Table));
+
+    private string GetPrimaryKeys(EventEntry entry)
+    {
+        return string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)));
+    }
 }
