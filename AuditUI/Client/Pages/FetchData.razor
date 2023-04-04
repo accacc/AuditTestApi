@@ -30,8 +30,8 @@
         <MudItem xs="12" sm="7">
             <MudCard>
                 <MudCardContent>
-                    <MudSelect @bind-Value="model.Entity" Label="Entity" HelperText="Entity"  AdornmentColor="Color.Secondary">
-                       @if(entities!=null)
+                    <MudSelect @bind-Value="model.Entity" Label="Entity" HelperText="Entity" AdornmentColor="Color.Secondary">
+                        @if (entities != null)
                         {
                             @foreach (string item in entities)
                             {
@@ -41,6 +41,8 @@
                     </MudSelect>
 
                     <MudTextField @bind-Value="model.Username" Label="User Name" Variant="Variant.Text"></MudTextField>
+
+                    <MudTextField @bind-Value="model.SearchText" Label="Text" Variant="Variant.Text"></MudTextField>
 
                     <MudDateRangePicker @ref="_picker" Label="Date Range" @bind-DateRange="model.DateRange" AutoClose="true">
                         @*  <PickerActions>
@@ -66,12 +68,12 @@
 }
 else
 {
-   
+
 
     <table>
         <thead>
             <tr>
-                <th>Entitiesa</th>
+                <th>Entities</th>
                 <th>Date</th>
 
             </tr>
@@ -93,18 +95,18 @@ else
                             {
                                 <tr>
                                     <td>
-                                        @*  <b>PK:</b>
+                                        <b>PK:</b>
 
-                        <label>
-                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                        </label>*@
-                                        Value of <b>@entry.Table s</b> name  <b><i>updated</i></b> with
+                                        </label>
+                                        Value of <b>@entry.Table</b> name  <b><i>updated</i></b> with
                                         @foreach (var change in entry.Changes)
                                         {
                                             <div>
                                                 .
-                                                <b> @change.ColumnName </b><label style="color:darkred;"> @change.OriginalValue </label> <label>to</label> <label style="color:green;"> @change.NewValue ,</label>
+                                                <b>  @change.ColumnName  </b><label style="color:darkred;">  @change.OriginalValue </label> <label>to</label> <label style="color:green;"> @change.NewValue ,</label>
 
 
                                             </div>
@@ -118,12 +120,12 @@ else
                                 <tr>
 
                                     <td>
-                                        @*   <b>PK:</b>
+                                        <b>PK:</b>
 
-                        <label>
-                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                        </label>*@
+                                        </label>
                                         Values of <b>@entry.Table's</b> name   <b>inserted</b> with
                                         @foreach (var value in entry.ColumnValues)
                                         {
@@ -141,12 +143,12 @@ else
                                 <tr>
 
                                     <td>
-                                        @* <b>PK:</b>
+                                        <b>PK:</b>
 
-                        <label>
-                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                        </label>*@
+                                        </label>
                                         Values of <b>@entry.Table's</b> name   <b>deleted</b> with
                                         @foreach (var value in entry.ColumnValues)
                                         {
@@ -195,19 +197,20 @@ else
         public DateRange DateRange { get; set; } = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
 
         public string Entity { get; set; }
+        public string SearchText { get; set; }
 
     }
 
     private async Task OnValidSubmit(EditContext context)
     {
-        string url = $"WeatherForecast?StartDate={model.DateRange.Start}&EndDate={model.DateRange.End}&UserName={model.Username}&Entity={model.Entity}";
+        string url = $"WeatherForecast?StartDate={model.DateRange.Start}&EndDate={model.DateRange.End}&UserName={model.Username}&Entity={model.Entity}&SearchText={model.SearchText}";
         audits = await Http.GetFromJsonAsync<EventAudit[]>(url);
         StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
     {
-      
+
         entities = await Http.GetFromJsonAsync<List<string>>("WeatherForecast/all");
 
     }

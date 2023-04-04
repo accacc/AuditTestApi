@@ -33,6 +33,16 @@ namespace AuditUI.Server.Controllers
                 query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Table == filter.Entity));
             }
 
+            if (filter.SearchText != null)
+            {
+                query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Changes.Any(c => c.ColumnName.Contains(filter.SearchText))));
+            }
+
+            //if (filter.SearchText != null)
+            //{
+            //    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.ColumnValues.Any(c => c.Key == filter.SearchText)));
+            //}
+
             var list = query.ToList();
 
 
@@ -67,7 +77,7 @@ namespace AuditUI.Server.Controllers
 
         public DateTime? EndDate { get; set; }
 
-
+        public string? SearchText { get; set; }
         public string? Entity { get; set; }
 
     }
