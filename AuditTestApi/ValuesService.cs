@@ -53,8 +53,8 @@ namespace AuditTestApi
                 OrderDate = DateTime.Now,
                 OrderItems = new[]
                 {
-                new OrderItem { ProductId = 1, Quantity = 2 },
-                new OrderItem { ProductId = 2, Quantity = 1 }
+                new OrderItem { OrderItemId=9, ProductId = 1, Quantity = 2 },
+                new OrderItem { OrderItemId=10,ProductId = 2, Quantity = 1 }
             }
             };
 

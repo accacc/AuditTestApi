@@ -147,10 +147,9 @@ else
     <table>
         <thead>
             <tr>
-                <th>Entities</th>
-                <th>Primary keys</th>
+                <th>Entitiesa</th>
                 <th>Date</th>
-              
+
             </tr>
         </thead>
 
@@ -168,17 +167,24 @@ else
 
                             @if (entry.Action == "Update" && entry.Changes != null)
                             {
-                                 <tr><td>
-                                        Value of <b>@entry.Table's</b> name  updated with
-                                @foreach (var change in entry.Changes)
-                                {
-                                            <b>PK:</b>
+                                <tr>
+                                    <td>
+                                      @*  <b>PK:</b>
 
-                                            @GetPrimaryKeys(entry)
-                                    .
-                                   <b> @change.ColumnName </b><label style="color:darkred;"> @change.OriginalValue</label> <label>to</label> <label style="color:green;">@change.NewValue ,</label>
-                                       
-                                }
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+
+                                        </label>*@
+                                        Value of <b>@entry.Table s</b> name  <b><i>updated</i></b> with
+                                        @foreach (var change in entry.Changes)
+                                        {
+                                            <div>                                           
+                                                .
+                                                <b> @change.ColumnName </b><label style="color:darkred;"> @change.OriginalValue </label> <label>to</label> <label style="color:green;"> @change.NewValue ,</label>
+
+                                              
+                                            </div>
+                                        }
                                     </td>
 
                                 </tr>
@@ -188,10 +194,41 @@ else
                                 <tr>
 
                                     <td>
-                                        Values of <b>@entry.Table's</b> name   inserted with
+                                     @*   <b>PK:</b>
+
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+
+                                        </label>*@
+                                        Values of <b>@entry.Table's</b> name   <b>inserted</b> with
                                         @foreach (var value in entry.ColumnValues)
                                         {
-                                            <label style="color:darkred;">@value.Key : </label><label style="color:green;">@value.Value ,</label>
+                                            <label style="color:darkred;">@value.Key : </label>
+
+                                            <label style="color:green;">@value.Value ,</label>
+
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                            else if (entry.Action == "Delete" && entry.ColumnValues != null)
+                            {
+                                <tr>
+
+                                    <td>
+                                       @* <b>PK:</b>
+
+                                        <label>
+                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+
+                                        </label>*@
+                                        Values of <b>@entry.Table's</b> name   <b>deleted</b> with
+                                        @foreach (var value in entry.ColumnValues)
+                                        {
+                                            <label style="color:darkred;">@value.Key : </label>
+
+                                            <label style="color:green;">@value.Value ,</label>
 
                                         }
 
@@ -230,9 +267,4 @@ else
     }
 
     private string Getentites(EventAudit context) => string.Join(",", context.EntityFrameworkEvent.Entries.Select(s => s.Table));
-
-    private string GetPrimaryKeys(EventEntry entry)
-    {
-        return string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)));
-    }
 }
