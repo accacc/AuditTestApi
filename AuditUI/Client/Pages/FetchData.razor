@@ -2,6 +2,7 @@
 @using AuditUI.Shared
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
+@using System.ComponentModel.DataAnnotations
 
 @inject HttpClient Http
 
@@ -24,125 +25,48 @@
     }
 </style>
 
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect @bind-Value="model.Entity" Label="Entity" HelperText="Entity"  AdornmentColor="Color.Secondary">
+                       @if(entities!=null)
+                        {
+                            @foreach (string item in entities)
+                            {
+                                <MudSelectItem Value="@item">@item</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+
+                    <MudTextField @bind-Value="model.Username" Label="User Name" Variant="Variant.Text"></MudTextField>
+
+                    <MudDateRangePicker @ref="_picker" Label="Date Range" @bind-DateRange="model.DateRange" AutoClose="true">
+                        @*  <PickerActions>
+                        <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
+                        <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                        </PickerActions>*@
+                    </MudDateRangePicker>
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+</EditForm>
+
 @if (audits == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    @* string css = @"table{width:100%;border-collapse:collapse;font-family:Arial,sans-serif}td,th{padding:15px;text-align:left;border-bottom:1px solid #ddd}th{background-color:#2196f3ff;color:#fff}";
-
-    string htmlTable = new Json2Html(false, css).GetJson2Html(JsonSerializer.Serialize(audits));
-
-    @((MarkupString)htmlTable)*@
-
-
-    @*    <MudTable Items="audits" Hover="true" Breakpoint="Breakpoint.Sm">
-        <ColGroup>
-            <col style="width:300px;" />
-            <col style="width:100px;" />
-            <col />
-            <col style="width:100px;" />
-        </ColGroup>
-        <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh>Date</MudTh>
-            <MudTh>Entities</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.Id))">@((context.ShowDetails == true) ? "Hide" : "Show") Address Details</MudButton></MudTd>
-            <MudTd DataLabel="StartDate">@context.StartDate.ToShortDateString()</MudTd>
-            <td>@Getentites(@context)</td>
-        </RowTemplate>
-
-        <ChildRowContent>
-            @if (context.ShowDetails)
-            {
-                <MudTr>
-                    <td colspan="4">
-                        <MudCard Elevation="0">
-
-                            <MudCardContent Class="pa-0">
-
-                                <MudTable Items="@context.EntityFrameworkEvent.Entries" Context="AddressContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-                                    <ColGroup>
-                                        <col />
-                                        <col />
-                                        <col  />
-                                        <col />
-                                    </ColGroup>
-
-                                    <HeaderContent>
-                                        <MudTh>Action</MudTh>
-                                        <MudTh>Column</MudTh>
-                                        <MudTh>Change</MudTh>
-                                        <MudTh>User</MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        @if (AddressContext.Changes != null)
-                                    {
-                                        @foreach (var item in AddressContext.Changes)
-                                        {
-                                            <MudTd DataLabel="User">User</MudTd>
-                                            <MudTd DataLabel="Column Name">@AddressContext.Table  .  @item.ColumnName</MudTd>
-                                            <MudTd DataLabel="Change"><MudText Style="color:darkred;">@item.OriginalValue</MudText>  to <MudText Style="color:green;">@item.NewValue</MudText></MudTd>
-                                            <MudTd DataLabel="Action">@AddressContext.Action</MudTd>
-                                        }
-                                    }
-                                </RowTemplate>
-                                </MudTable>
-                            </MudCardContent>
-                        </MudCard>
-                    </td>
-                </MudTr>
-            }
-        </ChildRowContent>
-
-    </MudTable>*@
-
-    @*    <table>
-        <thead>
-            <tr>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Entities Date</th>
-            </tr>
-        </thead>
-        @foreach (var audit in audits)
-        {
-            <tr>
-                <td>  @audit.StartDate</td>
-                <td>  @audit.EndDate</td>
-                <td>  @string.Join(",",@audit.EntityFrameworkEvent.Entries.Select(s=>s.Table))</td>
-            </tr>
-            <tr>
-                <td>
-                    <table>
-                        @foreach (var entry in audit.EntityFrameworkEvent.Entries)
-                        {
-                            if (entry.Changes != null)
-                            {
-                                @foreach (var change in entry.Changes)
-                                {
-                                    <tr>
-                                        <td>@entry.Table</td>
-                                        <td>@change.ColumnName.</td>
-                                        <td>@change.OriginalValue</td>
-                                        <td>@change.NewValue</td>
-                                    </tr>
-                                }
-                            }
-
-                        }
-                    </table>
-                </td>
-            </tr>
-
-
-
-        }
-
-    </table>*@
+   
 
     <table>
         <thead>
@@ -169,20 +93,20 @@ else
                             {
                                 <tr>
                                     <td>
-                                      @*  <b>PK:</b>
+                                        @*  <b>PK:</b>
 
-                                        <label>
-                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                        <label>
+                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                                        </label>*@
+                        </label>*@
                                         Value of <b>@entry.Table s</b> name  <b><i>updated</i></b> with
                                         @foreach (var change in entry.Changes)
                                         {
-                                            <div>                                           
+                                            <div>
                                                 .
                                                 <b> @change.ColumnName </b><label style="color:darkred;"> @change.OriginalValue </label> <label>to</label> <label style="color:green;"> @change.NewValue ,</label>
 
-                                              
+
                                             </div>
                                         }
                                     </td>
@@ -194,12 +118,12 @@ else
                                 <tr>
 
                                     <td>
-                                     @*   <b>PK:</b>
+                                        @*   <b>PK:</b>
 
-                                        <label>
-                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                        <label>
+                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                                        </label>*@
+                        </label>*@
                                         Values of <b>@entry.Table's</b> name   <b>inserted</b> with
                                         @foreach (var value in entry.ColumnValues)
                                         {
@@ -217,12 +141,12 @@ else
                                 <tr>
 
                                     <td>
-                                       @* <b>PK:</b>
+                                        @* <b>PK:</b>
 
-                                        <label>
-                                            @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
+                        <label>
+                        @string.Join(",", entry.PrimaryKey.Select(x => string.Join("=", x.Key, x.Value)))
 
-                                        </label>*@
+                        </label>*@
                                         Values of <b>@entry.Table's</b> name   <b>deleted</b> with
                                         @foreach (var value in entry.ColumnValues)
                                         {
@@ -252,11 +176,39 @@ else
 
 
 @code {
+
+    private MudDateRangePicker _picker;
     private EventAudit[]? audits;
+    private List<string> entities;
+
+    AuditFilterForm model = new AuditFilterForm();
+    bool success;
+
+    public class AuditFilterForm
+    {
+        public string Username { get; set; }
+
+        //public DateTime StartDate { get; set; }
+
+        //public DateTime EndDate { get; set; }
+
+        public DateRange DateRange { get; set; } = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+
+        public string Entity { get; set; }
+
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        string url = $"WeatherForecast?StartDate={model.DateRange.Start}&EndDate={model.DateRange.End}&UserName={model.Username}&Entity={model.Entity}";
+        audits = await Http.GetFromJsonAsync<EventAudit[]>(url);
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        audits = await Http.GetFromJsonAsync<EventAudit[]>("WeatherForecast");
+      
+        entities = await Http.GetFromJsonAsync<List<string>>("WeatherForecast/all");
 
     }
 
