@@ -1,17 +1,28 @@
 ﻿@page "/fetchdata"
 @using AuditUI.Shared
 @using System.Text.Json;
-           @using System.Text.Json.Serialization;
-
+@using System.Text.Json.Serialization;
 
 @inject HttpClient Http
 
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial,sans-serif
+    }
 
-<PageTitle>Audit Data</PageTitle>
+    td, th {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd
+    }
 
-<h1>Audit Data</h1>
-
-<p>This component demonstrates fetching Audit Data from the server.</p>
+    th {
+        background-color: #2196f3ff;
+        color: #fff
+    }
+</style>
 
 @if (audits == null)
 {
@@ -19,16 +30,202 @@
 }
 else
 {
-    string htmlTable = new Json2Html(false,"table").GetJson2Html(JsonSerializer.Serialize(audits));
+    @* string css = @"table{width:100%;border-collapse:collapse;font-family:Arial,sans-serif}td,th{padding:15px;text-align:left;border-bottom:1px solid #ddd}th{background-color:#2196f3ff;color:#fff}";
 
-    @((MarkupString)htmlTable)
+    string htmlTable = new Json2Html(false, css).GetJson2Html(JsonSerializer.Serialize(audits));
+
+    @((MarkupString)htmlTable)*@
+
+
+    @*    <MudTable Items="audits" Hover="true" Breakpoint="Breakpoint.Sm">
+        <ColGroup>
+            <col style="width:300px;" />
+            <col style="width:100px;" />
+            <col />
+            <col style="width:100px;" />
+        </ColGroup>
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh>Date</MudTh>
+            <MudTh>Entities</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.Id))">@((context.ShowDetails == true) ? "Hide" : "Show") Address Details</MudButton></MudTd>
+            <MudTd DataLabel="StartDate">@context.StartDate.ToShortDateString()</MudTd>
+            <td>@Getentites(@context)</td>
+        </RowTemplate>
+
+        <ChildRowContent>
+            @if (context.ShowDetails)
+            {
+                <MudTr>
+                    <td colspan="4">
+                        <MudCard Elevation="0">
+
+                            <MudCardContent Class="pa-0">
+
+                                <MudTable Items="@context.EntityFrameworkEvent.Entries" Context="AddressContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                    <ColGroup>
+                                        <col />
+                                        <col />
+                                        <col  />
+                                        <col />
+                                    </ColGroup>
+
+                                    <HeaderContent>
+                                        <MudTh>Action</MudTh>
+                                        <MudTh>Column</MudTh>
+                                        <MudTh>Change</MudTh>
+                                        <MudTh>User</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        @if (AddressContext.Changes != null)
+                                    {
+                                        @foreach (var item in AddressContext.Changes)
+                                        {
+                                            <MudTd DataLabel="User">User</MudTd>
+                                            <MudTd DataLabel="Column Name">@AddressContext.Table  .  @item.ColumnName</MudTd>
+                                            <MudTd DataLabel="Change"><MudText Style="color:darkred;">@item.OriginalValue</MudText>  to <MudText Style="color:green;">@item.NewValue</MudText></MudTd>
+                                            <MudTd DataLabel="Action">@AddressContext.Action</MudTd>
+                                        }
+                                    }
+                                </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>
+
+    </MudTable>*@
+
+    @*    <table>
+        <thead>
+            <tr>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Entities Date</th>
+            </tr>
+        </thead>
+        @foreach (var audit in audits)
+        {
+            <tr>
+                <td>  @audit.StartDate</td>
+                <td>  @audit.EndDate</td>
+                <td>  @string.Join(",",@audit.EntityFrameworkEvent.Entries.Select(s=>s.Table))</td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        @foreach (var entry in audit.EntityFrameworkEvent.Entries)
+                        {
+                            if (entry.Changes != null)
+                            {
+                                @foreach (var change in entry.Changes)
+                                {
+                                    <tr>
+                                        <td>@entry.Table</td>
+                                        <td>@change.ColumnName.</td>
+                                        <td>@change.OriginalValue</td>
+                                        <td>@change.NewValue</td>
+                                    </tr>
+                                }
+                            }
+
+                        }
+                    </table>
+                </td>
+            </tr>
+
+
+
+        }
+
+    </table>*@
+
+    <table>
+        <thead>
+            <tr>
+                <th>Entities</th>
+                <th>Date</th>
+              
+            </tr>
+        </thead>
+
+        @foreach (var audit in audits)
+        {
+            <tr>
+                
+                <td>  @string.Join(",",@audit.EntityFrameworkEvent.Entries.Select(s=>s.Table))</td>
+                <td>  @audit.StartDate</td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        @foreach (var entry in audit.EntityFrameworkEvent.Entries)
+                        {
+
+                            @if (entry.Action == "Update" && entry.Changes != null)
+                            {
+                                 <tr>
+
+                                        <td>
+                                        Value of <b>@entry.Table's</b> name  updated with
+                                @foreach (var change in entry.Changes)
+                                {
+                                   <b> @change.ColumnName </b><label style="color:darkred;">@change.OriginalValue</label> <label>to</label> <label style="color:green;">@change.NewValue ,</label>
+                                       
+                                }
+                                    </td>
+
+                                </tr>
+                            }
+                            else if (entry.Action == "Insert" && entry.ColumnValues != null)
+                            {
+                                <tr>
+
+                                    <td>
+                                        Values of <b>@entry.Table's</b> name   inserted with
+                                        @foreach (var value in entry.ColumnValues)
+                                        {
+                                            <label style="color:darkred;">@value.Key : </label><label style="color:green;">@value.Value ,</label>
+
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+
+
+
+                        }
+                    </table>
+                </td>
+            </tr>
+
+
+
+        }
+    </table>
 }
 
+
+
 @code {
-    private AuditEvent[]? audits;
+    private EventAudit[]? audits;
 
     protected override async Task OnInitializedAsync()
     {
-        audits = await Http.GetFromJsonAsync<AuditEvent[]>("WeatherForecast");
+        audits = await Http.GetFromJsonAsync<EventAudit[]>("WeatherForecast");
+
     }
+
+    private void ShowBtnPress(Guid nr)
+    {
+        EventAudit tmpPerson = audits.First(f => f.Id == nr);
+        tmpPerson.ShowDetails = !tmpPerson.ShowDetails;
+    }
+
+    private string Getentites(EventAudit context) => string.Join(",", context.EntityFrameworkEvent.Entries.Select(s => s.Table));
 }

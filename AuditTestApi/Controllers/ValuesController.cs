@@ -15,30 +15,33 @@ namespace AuditTestApi.Controllers
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<ProductEntity>> Get()
+        public ActionResult<IEnumerable<Order>> Get()
         {
             return Ok(_provider.GetProducts());
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductEntity>> Get(int id)
+        public async Task<ActionResult<Order>> Get(int id)
         {
             return Ok(await _provider.GetAsync(id));
         }
 
         // POST api/values
         [HttpPost]
-        public async Task<ActionResult<int>> Post([FromBody] ProductEntity value)
+        public async Task<ActionResult<int>> Post()
         {
-            return Ok(await _provider.InsertAsync(value));
+
+
+
+            return Ok(await _provider.InsertAsync());
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task Put(int id, [FromBody] ProductEntity value)
+        public async Task Put()
         {
-            await _provider.ReplaceAsync(id, value);
+            await _provider.ReplaceAsync(1);
         }
 
         // DELETE api/values/5
