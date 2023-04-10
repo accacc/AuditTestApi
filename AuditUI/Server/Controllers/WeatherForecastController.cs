@@ -1,4 +1,3 @@
-using Audit.Core;
 using Audit.EntityFramework;
 using Audit.MongoDB.Providers;
 
@@ -23,8 +22,10 @@ namespace AuditUI.Server.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<AuditEvent> Get([FromQuery] AuditFilterForm filter)
+        public async Task<IEnumerable<AuditEventEntityFramework>> Get([FromQuery] AuditFilterForm filter)
         {
+
+            await Task.Delay(1);
 
             var query = ((MongoDataProvider)Audit.Core.Configuration.DataProvider).QueryEvents<AuditEventEntityFramework>();
 
@@ -38,10 +39,10 @@ namespace AuditUI.Server.Controllers
                 query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Changes.Any(c => c.ColumnName.Contains(filter.SearchText))));
             }
 
-            //if (filter.SearchText != null)
-            //{
-            //    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.ColumnValues.Any(c => c.Key == filter.SearchText)));
-            //}
+            if (filter.SearchText != null)
+            {
+                query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.ColumnValues.Any(c => c.Key == filter.SearchText)));
+            }
 
             var list = query.ToList();
 
@@ -50,8 +51,9 @@ namespace AuditUI.Server.Controllers
         }
 
         [HttpGet("all")]
-        public IEnumerable<string> Gets()
+        public async Task<IEnumerable<string>> Gets()
         {
+            await Task.Delay(1);
 
             var list = ((MongoDataProvider)Audit.Core.Configuration.DataProvider).QueryEvents<AuditEventEntityFramework>().ToList();
 
