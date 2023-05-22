@@ -1,5 +1,10 @@
-﻿namespace AuditUI.Client
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace AuditUI.Client
 {
+
+
+    [BsonIgnoreExtraElements]
 
     public class EventAudit
     {
@@ -20,9 +25,11 @@
 
         public bool ShowDetails { get; set; }
     }
+
+    [BsonIgnoreExtraElements]
     public class EntityFrameworkEvent
     {
-
+        //public string ContextId { get; set; }
 
         public List<EventEntry> Entries { get; set; }
 
@@ -34,6 +41,8 @@
 
     }
 
+
+    [BsonIgnoreExtraElements]
     public class EventEntry
     {
         public string Schema { get; set; }
@@ -51,6 +60,7 @@
 
     }
 
+    [BsonIgnoreExtraElements]
     public class EventEntryChange
     {
         public string ColumnName { get; set; }
