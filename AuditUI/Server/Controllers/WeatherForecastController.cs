@@ -26,16 +26,16 @@ namespace AuditUI.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<AuditEventEntityFramework>> Get([FromQuery] AuditFilterForm filter)
+        public async Task<IEnumerable<EventAudit>> Get([FromQuery] AuditFilterForm filter)
         {
 
             await Task.Delay(1);
 
-            BsonClassMap.RegisterClassMap<EventAudit>(cm =>
-            {
-                cm.AutoMap();
-                cm.SetIgnoreExtraElements(true);
-            });
+            //BsonClassMap.RegisterClassMap<EventAudit>(cm =>
+            //{
+            //    cm.AutoMap();
+            //    cm.SetIgnoreExtraElements(true);
+            //});
 
             try
             {
@@ -44,26 +44,28 @@ namespace AuditUI.Server.Controllers
 
                 List<EventAudit>  result = new MongoClient("mongodb://marketing:Marketing2019!@157.90.29.241:27017").GetDatabase("Audit").GetCollection<EventAudit>("Event").Find(_=> true).Project<EventAudit>(fields).ToList();
 
-                var query = ((MongoDataProvider)Audit.Core.Configuration.DataProvider).QueryEvents<AuditEventEntityFramework>();
+                return result;
 
-                if (filter.Entity != null)
-                {
-                    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Table == filter.Entity));
-                }
+                //var query = ((MongoDataProvider)Audit.Core.Configuration.DataProvider).QueryEvents<AuditEventEntityFramework>();
 
-                if (filter.SearchText != null)
-                {
-                    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Changes.Any(c => c.ColumnName.Contains(filter.SearchText))));
-                }
+                //if (filter.Entity != null)
+                //{
+                //    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Table == filter.Entity));
+                //}
 
-                if (filter.SearchText != null)
-                {
-                    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.ColumnValues.Any(c => c.Key == filter.SearchText)));
-                }
+                //if (filter.SearchText != null)
+                //{
+                //    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.Changes.Any(c => c.ColumnName.Contains(filter.SearchText))));
+                //}
 
-                var list = query.ToList();
+                //if (filter.SearchText != null)
+                //{
+                //    query = query.Where(q => q.EntityFrameworkEvent.Entries.Any(c => c.ColumnValues.Any(c => c.Key == filter.SearchText)));
+                //}
 
-                return list;
+                //var list = query.ToList();
+
+                //return list;
             }
             catch (Exception ex)
             {
