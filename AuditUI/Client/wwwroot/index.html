@@ -30,7 +30,15 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.js"></script>
+    <script src="countUp.js"></script>
+     <script>
+         window.setSingleWinner = (winnerWwidId, winnerNameId, winnerWwid, winnerName) => {
+             const c = new countUp.CountUp("myTargetElement", 500)
+             c.start()
 
+        }
+    </script>
 </body>
 
 </html>

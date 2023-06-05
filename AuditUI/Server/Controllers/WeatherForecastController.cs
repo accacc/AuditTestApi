@@ -4,12 +4,12 @@ using Audit.MongoDB.Providers;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver.Core.Configuration;
 using MongoDB.Driver;
-using AuditUI.Client;
 using MongoDB.Bson.Serialization;
+using AuditUI.Shared;
 
 namespace AuditUI.Server.Controllers
 {
-    [ApiController]
+	[ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {

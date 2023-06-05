@@ -1,8 +1,13 @@
-﻿namespace AuditTestApi
+﻿using Audit.Core;
+
+namespace AuditTestApi
 {
     public interface IProductService
     {
-        IEnumerable<Order> GetProducts();
+
+        Task<IEnumerable<AuditEvent?>> GetAudits();
+
+		IEnumerable<Order> GetProducts();
         Task<Order> GetAsync(int id);
         Task<int> InsertAsync();
         Task ReplaceAsync(int id);

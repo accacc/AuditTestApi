@@ -2,48 +2,44 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
-<MudGrid>
-    <MudItem xs="12" sm="7">
-        <MudPaper Class="pa-4">
-            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-                <MudTextField T="string" Label="Username" Required="true" RequiredError="User name is required!" />
-                <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
-                              Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
-                <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="pwField1"
-                              InputType="InputType.Password"
-                              Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
-                              RequiredError="Password is required!" />
-                <MudTextField T="string"
-                              Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
-                              Validation="@(new Func<string, string>(PasswordMatch))" />
-                <div class="d-flex">
-                    <MudRadioGroup T="string" Required="true" RequiredError="Account type is required!">
-                        <MudRadio Option="@("Personal")">Personal</MudRadio>
-                        <MudRadio Option="@("Professional")">Professional</MudRadio>
-                    </MudRadioGroup>
-                </div>
-                <div class="d-flex align-center justify-space-between">
-                    <MudCheckBox T="bool" Required="true" RequiredError="You must agree" Label="I agree!" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto">Register</MudButton>
-                </div>
-            </MudForm>
-        </MudPaper>
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=>form.Validate())">Validate</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="@(()=>form.Reset())" Class="mx-2">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="@(()=>form.ResetValidation())">Reset Validation</MudButton>
+@inject IJSRuntime JSRuntime
+
+<h1 class="jumbo" id="myTargetElement">0</h1>
+
+
+<MudGrid Style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);">
+    <MudItem xs="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full mud-height-full py-4">
+            <MudButton >
+
+                <MudImage Src="https://cdn.dsmcdn.com/seller-center/spm/seller-center-product/assets/add-from-catalog.svg"></MudImage>
+                <br />
+                From Global Catalog
+            </MudButton>
         </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText>
-                @foreach (var error in errors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
+    <MudItem xs="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full mud-height-full py-4">
+            <MudButton >
+                <MudImage Src="https://cdn.dsmcdn.com/seller-center/spm/seller-center-product/assets/single-product.svg"></MudImage>
+                <br />
+                Single Product
+            </MudButton>
         </MudPaper>
     </MudItem>
+    @*<MudItem xs="12">
+    <MudPaper Class="d-flex align-center justify-center mud-width-full mud-height-full py-8">
+
+    <ARImage Src="https://cdn.dsmcdn.com/seller-center/spm/seller-center-product/assets/quick-upload.svg"></ARImage>
+    <br />
+    <MudButton>Import From Excel</MudButton>
+
+    </MudPaper>
+    </MudItem>*@
 </MudGrid>
+
+
+
 
 
 @code {
@@ -51,7 +47,7 @@
     string[] errors = { };
     MudTextField<string> pwField1;
     MudForm form;
-
+    private Helper helper;
     private IEnumerable<string> PasswordStrength(string pw)
     {
         if (string.IsNullOrWhiteSpace(pw))
@@ -74,6 +70,20 @@
         if (pwField1.Value != arg)
             return "Passwords don't match";
         return null;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        helper = new Helper(JSRuntime);
+        await helper.StartSingleLuckyDrawResult();
+        base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected  async Task Deneme()
+    {
+        helper = new Helper(JSRuntime);
+        await helper.StartSingleLuckyDrawResult();
+
     }
 
 }

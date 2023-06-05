@@ -20,7 +20,7 @@ namespace AuditTestApi
             AuditService auditService = new AuditService();
             var list = await auditService.GetList();
 
-            return list;
+            return list.AsEnumerable();
         }
 
         public IEnumerable<Order?> GetProducts()

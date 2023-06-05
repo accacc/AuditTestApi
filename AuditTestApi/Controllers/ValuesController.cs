@@ -17,6 +17,8 @@ namespace AuditTestApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Order>> Get()
         {
+            var audits = _provider.GetAudits();
+
             return Ok(_provider.GetProducts());
         }
 

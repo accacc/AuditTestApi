@@ -1,7 +1,4 @@
-using Audit.Core;
-
 using AuditTestApi;
-
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,22 +61,34 @@ Audit.EntityFramework.Configuration.Setup()
 //    }
 //});
 
+//List<Uri> elasticSearchPoolUris = new List<Uri>();
+
+//elasticSearchPoolUris.Add(new Uri("https://search-globalcatalog-sonzlm2rcljjvdrznzhyuyzmxa.us-west-2.es.amazonaws.com/"));
 
 
+//var pool = new StaticConnectionPool(elasticSearchPoolUris);
 
+//var settings = new Nest.ConnectionSettings(pool);
+
+//settings.BasicAuthentication("gcuser", "gc-196!1-usR");
+
+//var auditingConnectionSettings = new AuditConnectionSettings(pool);
 
 //Audit.Core.Configuration.Setup()
 //              .UseElasticsearch(config => config
-//              .ConnectionSettings(new Uri("http://localhost:9200"))
+//              .ConnectionSettings(auditingConnectionSettings)
 //              .Index(auditEvent => auditEvent.EventType)
 //              .Id(ev => Guid.NewGuid()));
 
 
 Audit.Core.Configuration.Setup()
-    .UseMongoDB(config => config
-        .ConnectionString("mongodb://marketing:Marketing2019!@157.90.29.241:27017")
-        .Database("Audit")
-        .Collection("Event"));
+	.UseCustomProvider(new ArbimedAsyncAuditProvider(builder.Configuration));
+
+//Audit.Core.Configuration.Setup()
+//    .UseMongoDB(config => config
+//        .ConnectionString("mongodb://marketing:Marketing2019!@157.90.29.241:27017")
+//        .Database("Audit")
+//        .Collection("Event"));
 
 
 //BsonClassMap.RegisterClassMap<AuditTestApi.AuditEvent>(cm =>
